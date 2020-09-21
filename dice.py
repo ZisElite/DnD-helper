@@ -2,11 +2,13 @@ import math
 import random
 
 def roll(dice):
-    nums = dice.split("d")
-    iterations = int(nums[0])
-    rang = int(nums[1])
-
-    if rang not in [2, 4, 6, 8, 12, 20, 100]:
+    nums = dice.strip(" ").split("d")
+    try:
+        iterations = int(nums[0])
+        rang = int(nums[1])
+    except:
+        return("invalid input")
+    if rang not in [2, 4, 6, 8, 10, 12, 20, 100]:
         return ("invalid dice")
     
     rolls = []

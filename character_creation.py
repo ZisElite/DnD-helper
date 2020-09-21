@@ -44,96 +44,56 @@ skills = {1: "Acrobatics",
           15: "Stealth",
           16: "Survival"}
 
-#make dictionaries for classes, races,skills,stats
-#change error message to ligal numbers
+#notes
 #-----------------------------------------------------!!!!!!!!!!!!!!!!!!!
 async def characterCreation(client, author):
     
     def check(message):
         return message.author == author and message.channel.type == discord.ChannelType.private
 
-    name = ""
     await author.send("Starting new character creation")
     await asyncio.sleep(1)
-    #setting name---------------------------------------------------------
+#setting name--------------------------------------------------------------
+    name = ""
     await author.send("What is the character's name?")
-    confirmation = "n"
-    while(confirmation == "n"):  
-        name = await client.wait_for("message", check = check)
-        name = name.content
-        if name.strip() == "":
-            await author.send("Please enter a valid name")
-            continue
-        
-        await author.send("Are you sure about this name (y/n): " + name)
-        while(True):
-            confirmation = await client.wait_for("message", check = check)
-            confirmation = confirmation.content
-            if confirmation in ("y", "n"):
-                break
-            
-            await author.send("Please enter a valid answer")
-        if confirmation == "n":
-            await author.send("What is the character's name?")
-    #setting race----------------------------------------------------------
+    name = await client.wait_for("message", check = check)
+    name = name.content
+#setting race--------------------------------------------------------------
     race = ""
     await author.send("Select " + name + "'s race (1/2/3..):\n" +
     "\n".join([(str(key) + ". " + value) for key, value in races.items()]))
-    confirmation = "n"
-    while(confirmation == "n"):
+    while(True):
         race = await client.wait_for("message", check = check)
         try:
             race = int(race.content)
         except:
             await author.send("Please enter a number from 1 to 9")
-            print(author.name + " entered non numerical answer")
+            print(author.name + " entered non numerical answer for race")
             continue
         else:
-            print(author.name + " entered valid answer")
-        if race < 0 or race > 9:
-            await author.send("Please enter a number from 1 to 9")
-            continue
-        await author.send("Are you sure about this race (y/n): " + str(race))
-        while(True):
-            confirmation = await client.wait_for("message", check = check)
-            confirmation = confirmation.content
-            if confirmation in ("y", "n"):
-                break
-            
-            await author.send("Please enter a valid answer")
-        if confirmation == "n":
-            await author.send("Select " + name + "'s race (1/2/3..):\n" +
-                      "1. Human\n" +
-                      "2. Elf\n" +
-                      "3. Dwarf")
-    #setting class----------------------------------------------------------
+            print(author.name + " entered valid answer for race")
+        if race > 0 and race < 10:
+            break
+        await author.send("Please enter a number from 1 to 9")
+
+#setting class-------------------------------------------------------------
     clas = ""
     await author.send("Select "+ name + "'s class (1/2/3...):\n" +
-                      "1. Fighter\n" +
-                      "2. Ranger\n" +
-                      "3. Wizard")
-    confirmation = "n"
-    while(confirmation == "n"):
+    "\n".join([(str(key) + ". " + value) for key, value in classes.items()]))
+    while(True):
         clas = await client.wait_for("message", check = check)
-        clas = clas.content
-        if int(clas) < 0 or int(clas) > 3:
-            await author.send("please choose a valid race")
+        try:
+            clas = int(clas.content)
+        except:
+            await author.send("Please enter a number from 1 to 12")
+            print(author.name + " entered non numerical answer for class")
             continue
-
-        await author.send("Are you sure about this class (y/n): " + clas)
-        while(True):
-            confirmation = await client.wait_for("message", check = check)
-            confirmation = confirmation.content
-            if confirmation in ("y", "n"):
-                break
-            
-            await author.send("Please enter a valid answer")
-        if confirmation == "n":
-            await author.send("Select "+ name + "'s class (1/2/3...):\n" +
-                      "1. Fighter\n" +
-                      "2. Ranger\n" +
-                      "3. Wizard")
-    #setting stats-------------------------------------------------------------
+        else:
+            print(author.name + " entered valid answer for race")
+        if clas > 0 and clas < 13:
+            break
+        await author.send("Please enter a number from 1 to 12")
+#setting stats-------------------------------------------------------------
     stats = []
     await author.send("I will now roll for your stats. I will present you with 2 sets of 6 numbers.\n" +
                       "Choose the set you wish to use and assign each value as you see fit\n" +
@@ -146,56 +106,51 @@ async def characterCreation(client, author):
                       "Second set: " + str(sets[1]).strip("[]") + "\n")
     while(True):
         stats = await client.wait_for("message", check = check)
-        stats = [int(x) for x in stats.content.strip(" ").split(",")]
+        try:
+            stats = [int(x) for x in stats.content.strip(" ").split(",")]
+        except:
+            await author.send("Please answer in the format of str, dex, con, int, wis, cha")
+            print(author.name + " entered wrongly formatted input for ability scores")
+            continue
+        else:
+            print(author.name + " entered valid input for ability scores")
         stats.sort()
         if stats in sets:
             break
         await author.send("Please make sure your input is correct")
-    #setting skill proficiencies-----------------------------------------------
-    skills = []
+#setting skill proficiencies-----------------------------------------------
+    skill = []
     await author.send("Which skills is "+ name + " proficient at (1, 2, 3,...):\n" +
-                      "1. Acrobatics\n" +
-                      "2. Animal Handling\n" +
-                      "3. Arcana")
-    confirmation = "n"
-    while(confirmation == "n"):
-        skills = await client.wait_for("message", check = check)
-        skills = [int(x) for x in skills.content.strip(" ").split(",")]
-        skills.sort()
-        if len(skills) > 0 and skills[0] < 1 or skills[len(skills) - 1] > 3:
-            await author.send("please choose numbers between 1 and 3")
+    "\n".join([(str(key) + ". " + value) for key, value in skills.items()]))
+    while(True):
+        skill = await client.wait_for("message", check = check)
+        try:
+            skill = [int(x) for x in skill.content.strip(" ").split(",")]
+        except:
+            await author.send("Please choose numbers between 1 and 16")
+            print(author.name + " entered wrongly formatted input for skills")
             continue
-
-        await author.send("Are you sure about these skills (y/n): " + str(skills))
-        while(True):
-            confirmation = await client.wait_for("message", check = check)
-            confirmation = confirmation.content
-            if confirmation in ("y", "n"):
-                break
-            
-            await author.send("Please enter a valid answer")
-        if confirmation == "n":
-            await author.send("Which skills is "+ name + " proficient at (1, 2, 3,...):\n" +
-                      "1. Acrobatics\n" +
-                      "2. Animal Handling\n" +
-                      "3. Arcana")
-    #setting level-------------------------------------------------------------
+        else:
+            print(author.name + " entered valid answer for skills")
+        skill.sort()
+        if len(skill) > 0 and skill[0] > 0 or skill[len(skill) - 1] < 17:
+            break
+        await author.send("Please choose numbers between 1 and 16")
+#setting level-------------------------------------------------------------
     level = 1
     await author.send("What is " + name + "'s level?")
-    confirmation = "n"
-    while(confirmation == "n"):
-        ans = await client.wait_for("message", check = check)
-        level = int(ans.content)
-        if level < 1 or level > 20:
-            await author.send("Please enter a number between 1 and 20")
-            continue
-    await author.send("Are you sure " + name + " is level " + str(level) + "?")
     while(True):
-        confirmation = await client.wait_for("message", check = check)
-        confirmation = confirmation.content
-        if confirmation in ("y", "n"):
+        ans = await client.wait_for("message", check = check)
+        try:
+            level = int(ans.content)
+        except:
+            await author.send("Please enter a number between 1 and 20")
+            print(author.name + " entered non numerical answer for level")
+            continue
+        else:
+            print(author.name + " entered valid answer for level")
+        if level > 0 or level < 21:
             break
-    if confirmation == "n":
-        await author.send("What is " + name + "'s level?")
-
-            
+        await author.send("Please enter a number between 1 and 20")
+#--------------------------------------------------------------------------
+    await author.send("Summoning " + name + " to the material plane")
