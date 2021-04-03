@@ -59,38 +59,38 @@ async def characterCreation(client, author):
     name = await client.wait_for("message", check = check)
     name = name.content
 #setting race--------------------------------------------------------------
-    race = ""
+    race_id = ""
     await author.send("Select " + name + "'s race (1/2/3..):\n" +
     "\n".join([(str(key) + ". " + value) for key, value in races.items()]))
     while(True):
-        race = await client.wait_for("message", check = check)
+        race_id = await client.wait_for("message", check = check)
         try:
-            race = int(race.content)
+            race_id = int(race_id.content)
         except:
             await author.send("Please enter a number from 1 to 9")
             print(author.name + " entered non numerical answer for race")
             continue
         else:
             print(author.name + " entered valid answer for race")
-        if race > 0 and race < 10:
+        if race_id > 0 and race_id < 10:
             break
         await author.send("Please enter a number from 1 to 9")
 
 #setting class-------------------------------------------------------------
-    clas = ""
+    class_id = ""
     await author.send("Select "+ name + "'s class (1/2/3...):\n" +
     "\n".join([(str(key) + ". " + value) for key, value in classes.items()]))
     while(True):
-        clas = await client.wait_for("message", check = check)
+        class_id = await client.wait_for("message", check = check)
         try:
-            clas = int(clas.content)
+            class_id = int(class_id.content)
         except:
             await author.send("Please enter a number from 1 to 12")
             print(author.name + " entered non numerical answer for class")
             continue
         else:
             print(author.name + " entered valid answer for race")
-        if clas > 0 and clas < 13:
+        if class_id > 0 and class_id < 13:
             break
         await author.send("Please enter a number from 1 to 12")
 #setting stats-------------------------------------------------------------
@@ -119,21 +119,21 @@ async def characterCreation(client, author):
             break
         await author.send("Please make sure your input is correct")
 #setting skill proficiencies-----------------------------------------------
-    skill = []
+    skills_id = []
     await author.send("Which skills is "+ name + " proficient at (1, 2, 3,...):\n" +
     "\n".join([(str(key) + ". " + value) for key, value in skills.items()]))
     while(True):
-        skill = await client.wait_for("message", check = check)
+        skills_id = await client.wait_for("message", check = check)
         try:
-            skill = [int(x) for x in skill.content.strip(" ").split(",")]
+            skills_id = [int(x) for x in skills_id.content.strip(" ").split(",")]
         except:
             await author.send("Please choose numbers between 1 and 16")
             print(author.name + " entered wrongly formatted input for skills")
             continue
         else:
             print(author.name + " entered valid answer for skills")
-        skill.sort()
-        if len(skill) > 0 and skill[0] > 0 or skill[len(skill) - 1] < 17:
+        skills_id.sort()
+        if len(skills_id) > 0 and skills_id[0] > 0 or skills_id[len(skills_id) - 1] < 17:
             break
         await author.send("Please choose numbers between 1 and 16")
 #setting level-------------------------------------------------------------
@@ -154,3 +154,5 @@ async def characterCreation(client, author):
         await author.send("Please enter a number between 1 and 20")
 #--------------------------------------------------------------------------
     await author.send("Summoning " + name + " to the material plane")
+    character = character.Character(name, (race_id, races[race_id - 1,]), (class_id, classes[class_id - 1]), stats, skills_id, level)
+
