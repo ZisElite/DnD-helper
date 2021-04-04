@@ -13,27 +13,29 @@ texts = ["adv", "dis", "slashing", "sl", "piercing", "rc", "bludgeoning", "bg", 
 
 
 
-def analyze_input(inp):
+def analyze_input(ctype, inp):
+    print(ctype)
     if ctype in ["simple", "custom"]:                                                #if roll type is either simple or custm
         roll = inp.split()                                                           #split input
         if len(roll) < 2:                                                            #if input has only 1 element, return error message
             return ("No dice were given")                                             
         elif len(roll) > 2:                                                          #if input has more than 2 elements, return error message
             return("Too many inputs")
-            if ctype == "simple":                                                    #if the input is a simple roll
-                if re.match(regex_rolls, roll[1]):                                   #if the input matches the acceptable die format
-                    data = roll_dice("", [int(x) for x in roll[1].split("d")])       #roll dice and store results in data
-                    out = output_generator(ctype, data, roll[1])                     #create output and store it in out
-                    return(out)                                                      #return out to bot to print
-                else:                                                                #else, the input format is wrong, return error message
-                    return("Wrong format")
-            elif ctype == "custom":                                                  #elif the input is a custom roll
-                if re.match(regex_custom, roll[1]):                                  #if the input matches the acceptable die format
-                    data = roll_dice("", [int(x) for x in roll[1].split("d")])       #roll dice and store results in data
-                    out = output_generator(ctype, data, roll[1])                     #create output and store it in out
-                    return(out)                                                      #return out to bot to print
-                else:                                                                #else, the input format is wrong, retur error message
-                    return("Wrong format")
+        if ctype == "simple":  
+            print("ok")                                                              #if the input is a simple roll
+            if re.match(regex_rolls, roll[1]):                                       #if the input matches the acceptable die format
+                data = roll_dice([0, 0], [int(x) for x in roll[1].split("d")])       #roll dice and store results in data
+                out = output_generator(ctype, data, roll[1])                         #create output and store it in out
+                return(out)                                                          #return out to bot to print
+            else:                                                                    #else, the input format is wrong, return error message
+                return("Wrong format")
+        elif ctype == "custom":                                                      #elif the input is a custom roll
+            if re.match(regex_custom, roll[1]):                                      #if the input matches the acceptable die format
+                data = roll_dice([0, 0], [int(x) for x in roll[1].split("d")])       #roll dice and store results in data
+                out = output_generator(ctype, data, roll[1])                         #create output and store it in out
+                return(out)                                                          #return out to bot to print
+            else:                                                                    #else, the input format is wrong, retur error message
+                return("Wrong format")
     else:
         dice = 0
         modifiers = 0
@@ -124,8 +126,8 @@ def output_generator(ctype, data, inp):
     out = ""
     roll = [0, [0,0]]
     if ctype == "simple" or ctype =="custom":                                        #if is is simple or custom roll return the message
-        out += " rolled " + inp  + " for a total of " + data[0]
-        if len[data[1]] > 1:
+        out += " rolled " + inp  + " for a total of " + str(data[0])
+        if len(data[1]) > 1:
             out += " (" + ", ".join([str(x) for x in data[1]]) + ")"
     else:                                                                            #the first part of the message depends on the type of roll
         if ctype == "attack":
@@ -145,24 +147,33 @@ def output_generator(ctype, data, inp):
                 if i != len(data[0]) - 1:                                            #add ", " after each iteration to separate them, unless it is the last one
                     out += ", "
         else:                                                                                                                                                #for attack, skill and save types
+            adv = False
+            mod = False
             if "adv" in data[4]:                                                                                                                             #if it is advantage
                 roll = roll_dice(["20", "adv"], "")                                                                                                          #roll the 2 d20s
-                out += str(sum(data[0]) + sum(data[3]) + roll[0]) + ": rolled " + str(roll[0]) + ", adv (" + ",".join([str(x) for x in roll[1]]) + "), "     #total extra dice + modifier + d20 + both d20s
+                out += str(sum(data[0]) + sum(data[3]) + roll[0]) + ": rolled " + str(roll[0]) + ", adv (" + ",".join([str(x) for x in roll[1]]) + ")"     #total extra dice + modifier + d20 + both d20s
+                adv = True
             elif "dis" in data[4]:                                                                                                                           #if it is dis, same as adv
                 roll = roll_dice(["20", "dis"], "")                                                                     
-                out += str(sum(data[0]) + sum(data[3]) + roll[0]) + ": rolled " + str(roll[0]) + ", dis (" + ",".join([str(x) for x in roll[1]]) + "), "
+                out += str(sum(data[0]) + sum(data[3]) + roll[0]) + ": rolled " + str(roll[0]) + ", dis (" + ",".join([str(x) for x in roll[1]]) + ")"
+                adv = True
             else:                                                                                                                                            #else, it has no adv or dis, roll d20, add modifier + extra dice
                 roll = roll_dice(["20", ""], "")
-                out += str(sum(data[0]) + sum(data[3]) + roll[0]) + ": rolled " + str(roll[0]) + ", "
+                out += str(sum(data[0]) + sum(data[3]) + roll[0]) + ": rolled " + str(roll[0])
             if sum(data[3]) != 0:                                                                                                                            #if there is a modifier, show it
-                out += str(sum(data[3])) + " modifier, "
+                if adv:
+                    out += ", "
+                out += str(sum(data[3])) + " modifier"
+                mod = True
             for i in range(0, len(data[1])):                                                                                                                 #if there are extra dice, show them one by one
                 if sum(data[1][i]) != 0:
+                    if adv or mod:
+                        out += ", "
                     out += "extra " + str(data[2][i][0]) + "d" + str(data[2][i][1]) + " for " + str(data[0][i])
                     if len(data[1][i]) > 1:                                                                                                                  #if more than one die were rolled, show them all
-                        out += " (" + ", ".join([str(x) for x in data[1][i]]) + "), "
+                        out += " (" + ", ".join([str(x) for x in data[1][i]]) + ")"
     return (out)
 
 inp = input("Enter roll\n")
-ctype = "damage"
-print (analyze_input(inp))
+ctype = "attack"
+print (analyze_input(ctype, inp))
