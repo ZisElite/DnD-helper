@@ -11,7 +11,7 @@ def reply(message):
                 "!damageroll or !dar to roll damage\n" +
                 "!skillroll or !skr to make a skill check\n" +
                 "!saveroll or !sar to make a saving through\n" +
-                "!contestingroll or !cor to make a contesting roll\n" +
+#                "!contestingroll or !cor to make a contesting roll\n" +
                 "!customroll or !cur to make a custom roll")
 
     #if it is !helper + <command>, display how that <command> works
@@ -32,11 +32,12 @@ def reply(message):
                     "<amount>d<type> <modifier> <damage type>, ...\n" +
                     "f.e. 2d6 +4 fire, 4d6 -2 bg (to learn more about damage types enter !dmtypes).")
 
-        #show how !contestingroll works
-        elif content[1] == "!contestingroll" or content[1] == "!cor":
-            return ("A contesting roll uses the contestants' modifiers, wether someone has advantage or disadvantage" +
-                    " and any extra dice that might be used, like bardic inspiration.\n" +
-                    "F.e. +3 adv, 1d4 + 5 (this counts as one roll).")
+        #show how !contestingroll works ---------POSSIMPLE IMPLEMENTATION IN THE FUTURE
+#        elif content[1] == "!contestingroll" or content[1] == "!cor":
+#            return ("A contesting roll uses the contestants' modifiers, wether someone has advantage or disadvantage" +
+#                    " and any extra dice that might be used, like bardic inspiration.\n" +
+#                    "F.e. +3 adv, 1d4 + 5 (this counts as one roll).")
+
         #show how !customroll works
         elif content[1] == "!customroll" or content[1] == "!cur":
             return ("This is a freely customizable roll, where there range is outside of the" +
